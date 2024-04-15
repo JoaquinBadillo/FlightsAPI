@@ -28,6 +28,5 @@ type Seat struct {
 	Flight Flight  `json:"flight"`
 	Number string  `json:"number"`
 	Class  string  `json:"class"`
-	Status string  `json:"status"`
 	Price  float64 `json:"price"`
 }
