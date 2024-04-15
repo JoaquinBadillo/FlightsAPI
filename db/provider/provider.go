@@ -11,6 +11,7 @@ package provider
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 
@@ -23,6 +24,7 @@ type Manager interface {
 	GetAvailableFlights(limit, offset int) ([]*models.Flight, error)
 	GetAvailableFlightsByLocation(state, country string, limit, offset int) ([]*models.Flight, error)
 	GetAvailableSeats(flightID int) ([]*models.Seat, error)
+	CreateOrder(order *models.Order) (*models.Order, error)
 	Close()
 }
 
@@ -202,6 +204,38 @@ func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
 	}
 
 	return seats, nil
+}
+
+func (m *manager) CreateOrder(order *models.Order) (*models.Order, error) {
+	query := "SELECT o_order_id, o_price FROM create_order($1, $2, $3, $4, $5)"
+
+	if order.Email == nil ||
+		order.FirstName == nil ||
+		order.LastName == nil ||
+		order.Seat == nil ||
+		order.Seat.Flight == nil ||
+		order.Seat.Flight.ID < 1 ||
+		order.Seat.Number == "" {
+		return nil, errors.New("invalid order data")
+	}
+
+	err := m.db.QueryRow(
+		query,
+		order.Email,
+		order.FirstName,
+		order.LastName,
+		order.Seat.Flight.ID,
+		order.Seat.Number,
+	).Scan(
+		&order.ID,
+		&order.Seat.Price,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
 }
 
 func (m *manager) Close() {

@@ -42,6 +42,7 @@ func main() {
 	mux.HandleFunc("GET /api/flights", routes.GetFlights)
 	mux.HandleFunc("GET /api/flights/{id}", routes.GetFlight)
 	mux.HandleFunc("GET /api/flights/{id}/seats", routes.GetSeats)
+	mux.HandleFunc("POST /api/orders", routes.BookSeat)
 
 	server := &http.Server{
 		Addr:    port,
