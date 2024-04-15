@@ -18,14 +18,14 @@ type Airport struct {
 
 type Flight struct {
 	ID            int     `json:"id,omitempty"`
-	Origin        Airport `json:"origin"`
-	Destination   Airport `json:"destination"`
-	ArrivalTime   string  `json:"arrival"`
-	DepartureTime string  `json:"departure"`
+	Origin        Airport `json:"origin,omitempty"`
+	Destination   Airport `json:"destination,omitempty"`
+	ArrivalTime   string  `json:"arrival,omitempty"`
+	DepartureTime string  `json:"departure,omitempty"`
 }
 
 type Seat struct {
-	Flight Flight  `json:"flight"`
+	Flight *Flight `json:"flight,omitempty"`
 	Number string  `json:"number"`
 	Class  string  `json:"class"`
 	Price  float64 `json:"price"`

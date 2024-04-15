@@ -162,7 +162,7 @@ func (m *manager) GetAvailableFlightsByLocation(state, country string, limit, of
 
 func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
 	query := `
-		SELECT flight_id, seat_number, class, price
+		SELECT seat_number, class, price
 		FROM available_seats
 		WHERE flight_id = $1
 	`
@@ -181,7 +181,6 @@ func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
 		s := &models.Seat{}
 
 		err := rows.Scan(
-			&s.Flight.ID,
 			&s.Number,
 			&s.Class,
 			&s.Price,
