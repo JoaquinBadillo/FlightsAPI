@@ -21,7 +21,7 @@ import (
 	"syscall"
 
 	manager "github.com/JoaquinBadillo/FlightsAPI/db/provider"
-	flights "github.com/JoaquinBadillo/FlightsAPI/routes"
+	routes "github.com/JoaquinBadillo/FlightsAPI/routes"
 )
 
 func Colorize(color int, message string) string {
@@ -39,8 +39,9 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/flights", flights.GetFlights)
-	mux.HandleFunc("GET /api/flights/{id}", flights.GetFlight)
+	mux.HandleFunc("GET /api/flights", routes.GetFlights)
+	mux.HandleFunc("GET /api/flights/{id}", routes.GetFlight)
+	mux.HandleFunc("GET /api/flights/{id}/seats", routes.GetSeats)
 
 	server := &http.Server{
 		Addr:    port,
