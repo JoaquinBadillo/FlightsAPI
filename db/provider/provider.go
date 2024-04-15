@@ -45,30 +45,35 @@ func Connect() {
 }
 
 func (m *manager) GetFlight(id int) (*models.Flight, error) {
-	f := &models.Flight{}
+	origin := &models.Airport{}
+	destination := &models.Airport{}
+	f := &models.Flight{
+		Origin:      origin,
+		Destination: destination,
+	}
 
 	query := `
 		SELECT f.id, f.arrival_time, f.departure_time, 
 		a.icao, a.iata, a.name, a.state, a.country,
 		b.icao, b.iata, b.name, b.state, b.country FROM flights f
-		INNER JOIN airports a ON flights.origin = a.icao
-		INNER JOIN airports b ON flights.destination = b.icao
-		WHERE flights.id = $1
+		INNER JOIN airports a ON f.origin_airport_id = a.icao
+		INNER JOIN airports b ON f.destination_airport_id = b.icao
+		WHERE f.id = $1
 	`
 	err := m.db.QueryRow(query, id).Scan(
 		&f.ID,
 		&f.ArrivalTime,
 		&f.DepartureTime,
-		&f.Origin.ICAO,
-		&f.Origin.IATA,
-		&f.Origin.Name,
-		&f.Origin.State,
-		&f.Origin.Country,
-		&f.Destination.ICAO,
-		&f.Destination.IATA,
-		&f.Destination.Name,
-		&f.Destination.State,
-		&f.Destination.Country,
+		&origin.ICAO,
+		&origin.IATA,
+		&origin.Name,
+		&origin.State,
+		&origin.Country,
+		&destination.ICAO,
+		&destination.IATA,
+		&destination.Name,
+		&destination.State,
+		&destination.Country,
 	)
 
 	if err != nil {
@@ -96,7 +101,10 @@ func (m *manager) GetAvailableFlights(limit, offset int) ([]*models.Flight, erro
 	flights := []*models.Flight{}
 
 	for rows.Next() {
-		f := &models.Flight{}
+		f := &models.Flight{
+			Origin:      &models.Airport{},
+			Destination: &models.Airport{},
+		}
 
 		err := rows.Scan(
 			&f.ID,
@@ -162,7 +170,7 @@ func (m *manager) GetAvailableFlightsByLocation(state, country string, limit, of
 
 func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
 	query := `
-		SELECT flight_id, seat_number, class, price
+		SELECT seat_number, class, price
 		FROM available_seats
 		WHERE flight_id = $1
 	`
@@ -181,7 +189,6 @@ func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
 		s := &models.Seat{}
 
 		err := rows.Scan(
-			&s.Flight.ID,
 			&s.Number,
 			&s.Class,
 			&s.Price,
