@@ -4,7 +4,7 @@ Defines a Database Manager using a singleton pattern.
 The Manager type has an interface that defines the expected queries.
 
 Joaquin Badillo
-2024-04-14
+2024-04-15
 */
 
 package provider
@@ -22,6 +22,7 @@ type Manager interface {
 	GetFlight(id int) (*models.Flight, error)
 	GetAvailableFlights(limit, offset int) ([]*models.Flight, error)
 	GetAvailableFlightsByLocation(state, country string, limit, offset int) ([]*models.Flight, error)
+	GetAvailableSeats(flightID int) ([]*models.Seat, error)
 	Close()
 }
 
@@ -157,6 +158,43 @@ func (m *manager) GetAvailableFlightsByLocation(state, country string, limit, of
 	}
 
 	return flights, nil
+}
+
+func (m *manager) GetAvailableSeats(flightID int) ([]*models.Seat, error) {
+	query := `
+		SELECT flight_id, seat_number, class, price
+		FROM available_seats
+		WHERE flight_id = $1
+	`
+
+	rows, err := m.db.Query(query, flightID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	seats := []*models.Seat{}
+
+	for rows.Next() {
+		s := &models.Seat{}
+
+		err := rows.Scan(
+			&s.Flight.ID,
+			&s.Number,
+			&s.Class,
+			&s.Price,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		seats = append(seats, s)
+	}
+
+	return seats, nil
 }
 
 func (m *manager) Close() {
