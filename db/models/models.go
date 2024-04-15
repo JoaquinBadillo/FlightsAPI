@@ -26,7 +26,16 @@ type Flight struct {
 
 type Seat struct {
 	Flight *Flight `json:"flight,omitempty"`
-	Number string  `json:"number"`
-	Class  string  `json:"class"`
-	Price  float64 `json:"price"`
+	Number string  `json:"number,omitempty"`
+	Class  string  `json:"class,omitempty"`
+	Price  float64 `json:"price,omitempty"`
+}
+
+type Order struct {
+	ID            int     `json:"id,omitempty"`
+	Email         *string `json:"email,omitempty"`
+	FirstName     *string `json:"first_name,omitempty"`
+	LastName      *string `json:"last_name,omitempty"`
+	Seat          *Seat   `json:"seat,omitempty"`
+	PaymentStatus *string `json:"payment_status,omitempty"`
 }
