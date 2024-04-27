@@ -6,3 +6,8 @@
 
 dist/
 Dockerfile
+
+**/*.sql
+
+LICENSE
+README.md
