@@ -41,9 +41,9 @@ func GetFlights(w http.ResponseWriter, r *http.Request) {
 	country := r.URL.Query().Get("country")
 
 	if city == "" || country == "" {
-		flights, err = provider.Mgr.GetAvailableFlights(limit, offset-1)
+		flights, err = provider.Mgr.GetAvailableFlights(r.Context(), limit, offset-1)
 	} else {
-		flights, err = provider.Mgr.GetAvailableFlightsByLocation(city, country, limit, offset-1)
+		flights, err = provider.Mgr.GetAvailableFlightsByLocation(r.Context(), city, country, limit, offset-1)
 	}
 
 	if err != nil {
@@ -65,7 +65,7 @@ func GetFlight(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	flight, err := provider.Mgr.GetFlight(id)
+	flight, err := provider.Mgr.GetFlight(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
