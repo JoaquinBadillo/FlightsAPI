@@ -141,7 +141,11 @@ func (m *manager) GetFlight(ctx context.Context, id int) (*models.Flight, error)
 }
 
 func (m *manager) GetAvailableFlights(ctx context.Context, limit, offset int) ([]*models.Flight, error) {
-	rows, err := m.getAvailableFlightsStmt.QueryContext(ctx, limit, offset)
+	rows, err := m.getAvailableFlightsStmt.QueryContext(
+		ctx,
+		min(30, limit),
+		offset,
+	)
 
 	if err != nil {
 		log.Println(err)
@@ -196,7 +200,7 @@ func (m *manager) GetAvailableFlightsByLocation(ctx context.Context, state, coun
 		ctx,
 		state,
 		country,
-		limit,
+		min(30, limit),
 		offset,
 	)
 
