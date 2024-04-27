@@ -21,7 +21,7 @@ func GetSeats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	seats, err := provider.Mgr.GetAvailableSeats(id)
+	seats, err := provider.Mgr.GetAvailableSeats(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -42,7 +42,7 @@ func BookSeat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order, err := provider.Mgr.CreateOrder(order)
+	order, err := provider.Mgr.CreateOrder(r.Context(), order)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
