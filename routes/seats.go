@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -31,4 +32,21 @@ func GetSeats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lib.WriteResponse(response, w, http.StatusOK)
+}
+
+func BookSeat(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	order := &models.Order{}
+	if err := decoder.Decode(order); err != nil {
+		http.Error(w, "Invalid order", http.StatusBadRequest)
+		return
+	}
+
+	order, err := provider.Mgr.CreateOrder(order)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	lib.WriteResponse(order, w, http.StatusCreated)
 }

@@ -17,7 +17,7 @@ CREATE TABLE airports(
 );
 
 CREATE INDEX idx_airports_iata ON airports(iata);
-CREATE UNIQUE INDEX idx_airports_location ON airports(country, state);
+CREATE INDEX idx_airports_location ON airports(country, state);
 
 CREATE TYPE flight_status_enum AS ENUM ('AVAILABLE', 'DEPARTED', 'CANCELLED');
 
